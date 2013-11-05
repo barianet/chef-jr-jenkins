@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description><%= @description %>.</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep><%= @logrotator['daystokeep'] || '5' %></daysToKeep>
+    <numToKeep><%= @logrotator['numtokeep'] || '-1' %></numToKeep>
+    <artifactDaysToKeep><%= @logrotator['artifactdaystokeep'] || '-1' %></artifactDaysToKeep>
+    <artifactNumToKeep><%= @logrotator['artifactnumtokeep'] || '-1' %></artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <hudson.triggers.TimerTrigger>
+      <spec><%= @cron_timer %></spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/sh -x
+<%= @shell_command %></command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
