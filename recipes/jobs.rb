@@ -26,10 +26,12 @@ jenkins_jobs.each do |job_name|
   template job_config do
     source "jenkins-shell-job.xml.erb"
     variables({
+      'job_name' => job_name,
       'description' => job_data['description'] || "Missing description for job #{job_name}",
       'logrotator' => job_data['logrotator'] || {},
       'cron_timer' => job_data['cron_timer'],
-      'shell_command' => job_data['shell_command']
+      'shell_command' => job_data['shell_command'],
+      'email_recipient' => job_data['email_recipient']
     })
     notifies :update, resources(:jenkins_job => job_name)
   end

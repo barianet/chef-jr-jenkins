@@ -27,6 +27,14 @@
 <%= @shell_command %></command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <% unless @email_recipient.nil? || @email_recipient.empty? -%>
+    <hudson.tasks.Mailer plugin="mailer@1.4">
+      <recipients><%= @email_recipient %></recipients>
+      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.tasks.Mailer>
+    <% end -%>
+  </publishers>
   <buildWrappers/>
 </project>
