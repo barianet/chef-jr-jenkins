@@ -1,0 +1,23 @@
+
+  # Jenkins proxy
+  ProxyRequests Off
+  <Proxy http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/*>
+    Order deny,allow
+    Allow from all
+  </Proxy>
+  ProxyPreserveHost on
+  ProxyPass         /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/
+  ProxyPassReverse  /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/
+  ProxyPassReverse  /  http://<%= @params[:name] %>/
+
+  <% if @params[:basic_auth_htpasswd] -%>
+  # Basic auth
+  RequestHeader unset Authorization
+  <Location />
+    AuthType basic
+    AuthName "Jenkins"
+    AuthBasicProvider file
+    AuthUserFile <%= @params[:basic_auth_htpasswd] %>
+    require valid-user
+  </Location>
+  <% end -%>

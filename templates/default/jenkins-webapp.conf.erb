@@ -1,0 +1,47 @@
+<VirtualHost <%= @params[:server_ip] %>:<%= @params[:server_port] %>>
+  ServerName <%= @params[:name] %>
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+  </Directory>
+
+  # Redirect to SSL
+  <IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{HTTPS} off
+    RewriteCond %{REMOTE_ADDR} !=127.0.0.1
+    RewriteCond %{REMOTE_HOST} !=<%= node['jenkins']['master']['host'] %>
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L,QSA]
+  </IfModule>
+
+  <%= render 'jenkins-webapp-common.erb' -%>
+
+  # Logs
+  LogLevel notice
+  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-error.log
+  CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-access.log combined
+</VirtualHost>
+
+<VirtualHost <%= @params[:server_ip_ssl] %>:<%= @params[:server_port_ssl] %>>
+  ServerName <%= @params[:name] %>
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+  </Directory>
+
+  <%= render 'jenkins-webapp-common.erb' -%>
+
+  # SSL
+  SSLEngine on
+  SSLProtocol -ALL +SSLv3 +TLSv1
+  SSLHonorCipherOrder On
+  SSLCipherSuite ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH
+  SSLCertificateFile <%= @params[:ssl_cert_file] %>
+  SSLCertificateKeyFile <%= @params[:ssl_key_file] %>
+  SSLCertificateChainFile <%= @params[:ssl_chain_file] %>
+
+  # Logs
+  LogLevel notice
+  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-ssl-error.log
+  CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-ssl-access.log combined
+</VirtualHost>
