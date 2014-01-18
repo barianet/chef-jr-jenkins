@@ -5,6 +5,7 @@
     AllowOverride None
   </Directory>
 
+  <% if @params[:server_ip_ssl] -%>
   # Redirect to SSL
   <IfModule mod_rewrite.c>
     RewriteEngine on
@@ -13,6 +14,7 @@
     RewriteCond %{REMOTE_HOST} !=<%= node['jenkins']['master']['host'] %>
     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L,QSA]
   </IfModule>
+  <% end -%>
 
   <%= render 'jenkins-webapp-common.erb' -%>
 
@@ -22,6 +24,7 @@
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-access.log combined
 </VirtualHost>
 
+<% if @params[:server_ip_ssl] -%>
 <VirtualHost <%= @params[:server_ip_ssl] %>:<%= @params[:server_port_ssl] %>>
   ServerName <%= @params[:name] %>
   <Directory />
@@ -45,3 +48,4 @@
   ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-ssl-error.log
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-ssl-access.log combined
 </VirtualHost>
+<% end -%>
