@@ -33,6 +33,9 @@ end
 include_recipe "apache2"
 include_recipe "apache2::mod_proxy"
 include_recipe "apache2::mod_proxy_http"
+if node['jr-jenkins']['proxy']['ssl_certificate']
+  include_recipe "apache2::mod_ssl"
+end
 
 # Define the web_app for the proxy.
 web_app node['jr-jenkins']['proxy']['server_name'] do
