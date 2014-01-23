@@ -15,3 +15,12 @@ default['jr-jenkins']['proxy']['basic_auth_pass'] = nil
 
 # Jenkins master overrides
 default['jenkins']['master']['jvm_options'] = "-Dorg.apache.commons.jelly.tags.fmt.timeZone=America/New_York"
+
+# Jenkins plugins
+default['jr-jenkins']['plugins'] = %w[
+  git
+  git-client
+  github
+  github-api
+  mailer
+]

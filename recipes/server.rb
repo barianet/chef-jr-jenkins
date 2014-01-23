@@ -13,6 +13,17 @@ include_recipe "jenkins::java"
 # Install Jenkins master.
 include_recipe "jenkins::master"
 
+# Install Jenkins plugins.
+if node['jr-jenkins']['plugins']
+  node['jr-jenkins']['plugins'].each do |plugin|
+    # Install specific version, if provided. Syntax: plugin=1.0.0
+    plugin, version = plugin.split('=')
+    jenkins_plugin plugin do
+      version version if version
+    end
+  end
+end
+
 # Install SSL certificate.
 if node['jr-jenkins']['proxy']['ssl_certificate']
   include_recipe "ssl_certificates"
