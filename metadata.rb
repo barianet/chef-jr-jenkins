@@ -9,4 +9,5 @@ version          '0.2.2'
 depends "apache2"
 depends "htpasswd"
 depends "jenkins"
+depends "openssl", "~> 1.1"
 depends "ssl_certificates"
