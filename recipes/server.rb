@@ -13,6 +13,9 @@ include_recipe "jenkins::java"
 # Install Jenkins master.
 include_recipe "jenkins::master"
 
+# Set up Jenkins admin user.
+include_recipe "jr-jenkins::user"
+
 # Install Jenkins plugins.
 if node['jr-jenkins']['plugins']
   node['jr-jenkins']['plugins'].each do |plugin|
