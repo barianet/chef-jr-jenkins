@@ -39,7 +39,7 @@ if node['jr-jenkins']['proxy']['basic_auth_user']
   basic_auth_htpasswd = File.join(node['jenkins']['master']['home'], '.htpasswd')
   htpasswd basic_auth_htpasswd do
     user node['jr-jenkins']['proxy']['basic_auth_user']
-    password node['jr-jenkins']['proxy']['basic_auth_password']
+    password node['jr-jenkins']['proxy']['basic_auth_pass']
   end
 end
 
