@@ -17,14 +17,17 @@ unless node['jr-jenkins']['user']['private_key']
   key = OpenSSL::PKey::RSA.new(4096)
   node.set['jr-jenkins']['user']['private_key'] = key.to_pem
   node.set['jr-jenkins']['user']['public_key'] = "#{key.ssh_type} #{[key.to_blob].pack('m0')}"
-else
-  # Set the private key on the Jenkins executor. Do this here so the private
-  # key is available to the executor for the following jobs. Otherwise, we want
-  # to set this after we enable authentication.
+end
+
+# Set the private key on the Jenkins executor. Do this here so the private
+# key is available to the executor for the following jobs. Otherwise, we want
+# to set this after we enable authentication.
+if node['jenkins']['executor']['private_key'].nil? && File.exists?(File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}"))
+  log ("setting jenkins][executor][private_key") { level :debug }
   node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
 end
 
-# Set a password.
+# Generate a password.
 unless node['jr-jenkins']['user']['passphrase']
   node.set['jr-jenkins']['user']['passphrase'] = secure_password
 end
@@ -53,14 +56,15 @@ jenkins_script 'add_authentication' do
 
     instance.save()
   EOH
-  not_if { ::File.exists?(File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}")) }
+  action :nothing
 end
 
 # Set the private key on the Jenkins executor.
-ruby_block "add private key to Jenkins executor" do
+ruby_block "jenkins_executor_key" do
   block do
     node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
   end
+  action :nothing
 end
 
 # Ensure the ssh_path.
@@ -71,18 +75,20 @@ directory ssh_path do
   recursive false
 end
 
-# Write the private key file.
-file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}") do
-  owner node['jenkins']['master']['user']
-  group node['jenkins']['master']['group']
-  mode "0600"
-  content node['jr-jenkins']['user']['private_key']
-end
-
 # Write the public key file.
 file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pub") do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
   mode "0600"
   content node['jr-jenkins']['user']['public_key']
+end
+
+# Write the private key file.
+file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}") do
+  owner node['jenkins']['master']['user']
+  group node['jenkins']['master']['group']
+  mode "0600"
+  content node['jr-jenkins']['user']['private_key']
+  notifies :create, "ruby_block[jenkins_executor_key]", :delayed
+  notifies :execute, "jenkins_script[add_authentication]", :delayed
 end
