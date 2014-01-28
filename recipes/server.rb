@@ -20,4 +20,4 @@ include_recipe "jr-jenkins::user"
 include_recipe "jr-jenkins::plugins"
 
 # Set up Apache proxy.
-#include_recipe "jr-jenkins::proxy"
+include_recipe "jr-jenkins::proxy"
