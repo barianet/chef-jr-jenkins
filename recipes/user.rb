@@ -7,8 +7,6 @@
 # All rights reserved - Do Not Redistribute
 #
 
-::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
-
 ssh_path = File.join(node['jenkins']['master']['home'], '.ssh')
 
 # Create a public/private key pair.
@@ -23,23 +21,12 @@ end
 # key is available to the executor for the following jobs. Otherwise, we want
 # to set this after we enable authentication.
 if node['jenkins']['executor']['private_key'].nil? && File.exists?(File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}"))
-  log ("setting jenkins][executor][private_key") { level :debug }
   node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
 end
 
-# Generate a password.
-unless node['jr-jenkins']['user']['passphrase']
-  node.set['jr-jenkins']['user']['passphrase'] = secure_password
-end
-
-# Create the Jenkins user with the public key.
+# Create the Jenkins Chef user with the public key.
 jenkins_user node['jr-jenkins']['user']['name'] do
   public_keys node['jr-jenkins']['user']['public_key']
-end
-
-jenkins_private_key_credentials node['jr-jenkins']['user']['name'] do
-  private_key node['jr-jenkins']['user']['private_key']
-  passphrase node['jr-jenkins']['user']['passphrase']
 end
 
 # Enable authentication.
