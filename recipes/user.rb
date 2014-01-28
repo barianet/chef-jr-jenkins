@@ -38,6 +38,9 @@ jenkins_script 'add_authentication' do
 
     def instance = Jenkins.getInstance()
 
+    def securityRealm = new HudsonPrivateSecurityRealm(true)
+    instance.setSecurityRealm(securityRealm)
+
     def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
     instance.setAuthorizationStrategy(strategy)
 
