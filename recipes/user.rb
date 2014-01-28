@@ -69,7 +69,7 @@ end
 file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pub") do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
-  mode "0600"
+  mode "0644"
   content node['jr-jenkins']['user']['public_key']
 end
 
