@@ -44,4 +44,5 @@ web_app node['jr-jenkins']['proxy']['server_name'] do
     ssl_chain_file "#{node[:ssl_certificates][:path]}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.ca-bundle"
   end
   basic_auth_htpasswd basic_auth_htpasswd
+  basic_auth_allow_from node['jr-jenkins']['proxy']['basic_auth_allow_from']
 end

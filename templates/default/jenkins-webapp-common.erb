@@ -18,6 +18,14 @@
     AuthName "Jenkins"
     AuthBasicProvider file
     AuthUserFile <%= @params[:basic_auth_htpasswd] %>
+    <% if @params[:basic_auth_allow_from] -%>
+    Order deny,allow
+    Deny from all
+    <% @params[:basic_auth_allow_from].each do |allow_ip| -%>
+    Allow from <%= allow_ip %>
+    <% end -%>
     require valid-user
+    Satisfy any
+    <% end -%>
   </Location>
   <% end -%>
