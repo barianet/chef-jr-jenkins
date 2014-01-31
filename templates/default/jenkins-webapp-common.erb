@@ -9,6 +9,8 @@
   ProxyPass         /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/
   ProxyPassReverse  /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/
   ProxyPassReverse  /  http://<%= @params[:name] %>/
+  SetEnv proxy-nokeepalive 1
+  SetEnv proxy-initial-not-pooled 1
 
   <% if @params[:basic_auth_htpasswd] -%>
   # Basic auth
