@@ -8,7 +8,7 @@
 #
 
 # Install Java.
-include_recipe "jenkins::java"
+include_recipe "java"
 
 # Install Jenkins master.
 include_recipe "jenkins::master"
