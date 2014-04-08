@@ -8,6 +8,8 @@
 #
 
 ssh_path = File.join(node['jenkins']['master']['home'], '.ssh')
+private_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}")
+public_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pub")
 
 # Create a public/private key pair.
 unless node['jr-jenkins']['user']['private_key']
@@ -17,10 +19,17 @@ unless node['jr-jenkins']['user']['private_key']
   node.set['jr-jenkins']['user']['public_key'] = "#{key.ssh_type} #{[key.to_blob].pack('m0')}"
 end
 
+# When running in Chef Solo, we can't set values on the node. (At least not
+# permanently.) So, we read the key pair from the ssh_path.
+if Chef::Config[:solo]
+  node.set['jr-jenkins']['user']['private_key'] = File.exists?(private_key_path) && File.open(private_key_path, 'rb') { |f| f.read }
+  node.set['jr-jenkins']['user']['public_key'] = File.exists?(public_key_path) && File.open(public_key_path, 'rb') { |f| f.read }
+end
+
 # Set the private key on the Jenkins executor. Do this here so the private
 # key is available to the executor for the following jobs. Otherwise, we want
 # to set this after we enable authentication.
-if node['jenkins']['executor']['private_key'].nil? && File.exists?(File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}"))
+if node['jenkins']['executor']['private_key'].nil? && File.exists?(private_key_path)
   node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
 end
 
@@ -66,7 +75,7 @@ directory ssh_path do
 end
 
 # Write the public key file.
-file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pub") do
+file public_key_path do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
   mode "0644"
@@ -74,7 +83,7 @@ file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pu
 end
 
 # Write the private key file.
-file File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}") do
+file private_key_path do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
   mode "0600"
