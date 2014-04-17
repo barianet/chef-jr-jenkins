@@ -11,19 +11,19 @@ ssh_path = File.join(node['jenkins']['master']['home'], '.ssh')
 private_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}")
 public_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pub")
 
-# Create a public/private key pair.
+# When running in Chef Solo, we can't set values on the node. (At least not
+# permanently.) So, we read the key pair from the ssh_path.
+if Chef::Config[:solo] && !(node['jr-jenkins']['user']['public_key'] || node['jr-jenkins']['user']['private_key'])
+  node.set['jr-jenkins']['user']['private_key'] = File.exists?(private_key_path) && File.open(private_key_path, 'rb') { |f| f.read }
+  node.set['jr-jenkins']['user']['public_key'] = File.exists?(public_key_path) && File.open(public_key_path, 'rb') { |f| f.read }
+end
+
+# Create a public/private key pair if not provided on the node.
 unless node['jr-jenkins']['user']['private_key']
   require 'net/ssh'
   key = OpenSSL::PKey::RSA.new(4096)
   node.set['jr-jenkins']['user']['private_key'] = key.to_pem
   node.set['jr-jenkins']['user']['public_key'] = "#{key.ssh_type} #{[key.to_blob].pack('m0')}"
-end
-
-# When running in Chef Solo, we can't set values on the node. (At least not
-# permanently.) So, we read the key pair from the ssh_path.
-if Chef::Config[:solo]
-  node.set['jr-jenkins']['user']['private_key'] = File.exists?(private_key_path) && File.open(private_key_path, 'rb') { |f| f.read }
-  node.set['jr-jenkins']['user']['public_key'] = File.exists?(public_key_path) && File.open(public_key_path, 'rb') { |f| f.read }
 end
 
 # Set the private key on the Jenkins executor. Do this here so the private
