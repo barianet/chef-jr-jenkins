@@ -6,9 +6,11 @@
     Allow from all
   </Proxy>
   ProxyPreserveHost on
-  ProxyPass         /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/
+  ProxyPass         /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/ nocanon
   ProxyPassReverse  /  http://<%= node['jenkins']['master']['host'] %>:<%= node['jenkins']['master']['port'] %>/
   ProxyPassReverse  /  http://<%= @params[:name] %>/
+  # Note: NoDecode option available in 2.3.12 and later.
+  # AllowEncodedSlashes NoDecode
   SetEnv proxy-nokeepalive 1
   SetEnv proxy-initial-not-pooled 1
 
