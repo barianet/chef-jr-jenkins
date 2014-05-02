@@ -33,7 +33,6 @@ action :execute do
   end
 
   if !jobs_to_remove.nil? && !jobs_to_remove.empty?
-    Chef::Log.debug("jobs: #{jobs}")
     jobs_to_remove.each do |remove_job|
       Chef::Log.debug("Removing Jenkins job #{remove_job}")
       executor.execute!('delete-job', remove_job)
