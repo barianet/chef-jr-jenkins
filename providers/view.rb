@@ -18,6 +18,7 @@
 #
 
 include Jenkins::Helper
+require 'shellwords'
 
 # Support whyrun
 def whyrun_supported?
@@ -43,7 +44,7 @@ action :create do
     Chef::Log.debug("#{@new_resource} exists - skipping")
   else
     converge_by("Create #{@new_resource}") do
-      executor.execute!('create-view', @new_resource.name, '<', @new_resource.config)
+      executor.execute!('create-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
     end
   end
 
@@ -51,7 +52,7 @@ action :create do
     Chef::Log.debug("#{@new_resource} config up to date - skipping")
   else
     converge_by("Update #{@new_resource} config") do
-      executor.execute!('update-view', @new_resource.name, '<', @new_resource.config)
+      executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
     end
   end
 end
@@ -86,7 +87,7 @@ def current_view
 
   Chef::Log.debug "Load #{@new_resource} view information"
 
-  response = executor.execute('get-view', @new_resource.name)
+  response = executor.execute('get-view', Shellwords.escape(@new_resource.name))
   return nil if response.nil? || response =~ /No view named/
 
   Chef::Log.debug "Parse #{@new_resource} as XML"
