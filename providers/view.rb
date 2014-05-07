@@ -26,14 +26,15 @@ end
 
 action :create do
   # Generate the XML via Template resource.
-  name = "jr-jenkins-view--#{new_resource.name}.xml"
+  name = "jr-jenkins-view--#{@new_resource.name}.xml"
   path = ::File.join(Chef::Config[:file_cache_path], name)
   t = Chef::Resource::Template.new(path, run_context)
   t.source(@new_resource.template)
   t.cookbook(@new_resource.cookbook)
   t.variables(
-    :name => @new_resource.name,
-    :jobs => @new_resource.jobs
+    new_resource: @new_resource,
+    name: @new_resource.name,
+    jobs: @new_resource.jobs,
   )
   t.run_action(:create)
   @new_resource.config = t.path

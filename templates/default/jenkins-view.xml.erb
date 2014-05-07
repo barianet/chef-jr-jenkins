@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hudson.model.ListView>
-  <name><%= @params[:name] %></name>
+  <name><%= @name %></name>
   <filterExecutors>false</filterExecutors>
   <filterQueue>false</filterQueue>
   <properties class="hudson.model.View$PropertyList"/>
   <jobNames>
     <comparator class="hudson.util.CaseInsensitiveComparator"/>
-    <% @params[:jobs].each do |job| -%>
+    <% @jobs.each do |job| -%>
     <string><%= job %></string>
     <% end -%>
   </jobNames>
