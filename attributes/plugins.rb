@@ -9,5 +9,6 @@ default['jr-jenkins']['plugins'] = %w[
   git-client
   github
   github-api
+  greenballs
   mailer
 ]
