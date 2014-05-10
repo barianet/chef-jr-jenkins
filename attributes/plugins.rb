@@ -11,4 +11,5 @@ default['jr-jenkins']['plugins'] = %w[
   github-api
   greenballs
   mailer
+  ws-cleanup
 ]
