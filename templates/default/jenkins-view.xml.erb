@@ -6,10 +6,11 @@
   <properties class="hudson.model.View$PropertyList"/>
   <jobNames>
     <comparator class="hudson.util.CaseInsensitiveComparator"/>
-    <% @jobs.each do |job| -%>
+    <% @jobs.sort.each do |job| -%>
     <string><%= job %></string>
     <% end -%>
   </jobNames>
+  <jobFilters/>
   <columns>
     <hudson.views.StatusColumn/>
     <hudson.views.WeatherColumn/>
