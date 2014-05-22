@@ -18,6 +18,7 @@
 #
 
 include Jenkins::Helper
+require 'rexml/document'
 require 'shellwords'
 
 # Support whyrun
@@ -91,7 +92,7 @@ def current_view
   return nil if response.nil? || response =~ /No view named/
 
   Chef::Log.debug "Parse #{@new_resource} as XML"
-  xml = REXML::Document.new(response)
+  xml = REXML::Document.new(response.rstrip)
 
   @current_view = {
     xml:     xml,
@@ -115,7 +116,7 @@ def correct_config?
   wanted  = StringIO.new
 
   current_view[:xml].write(current, 2)
-  REXML::Document.new(::File.read(@new_resource.config)).write(wanted, 2)
+  REXML::Document.new(::File.read(@new_resource.config).rstrip).write(wanted, 2)
 
   current.string == wanted.string
 end
