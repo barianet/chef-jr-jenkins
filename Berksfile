@@ -1,4 +1,4 @@
-site :opscode
+source "https://api.berkshelf.com"
 
 # Load from cookbook metadata.rb dependencies
 metadata
