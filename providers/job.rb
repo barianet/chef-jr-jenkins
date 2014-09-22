@@ -34,9 +34,9 @@ action :create do
   t.source(@new_resource.template)
   t.cookbook(@new_resource.cookbook)
   t.variables(
-    new_resource: @new_resource,
-    name: @new_resource.name,
-    params: @new_resource.params,
+    :new_resource => @new_resource,
+    :name => @new_resource.name,
+    :params => @new_resource.params,
   )
   t.run_action(:create)
   @new_resource.config = t.path
@@ -45,7 +45,7 @@ action :create do
     Chef::Log.debug("#{@new_resource} exists - skipping create")
   else
     converge_by("Create #{@new_resource}") do
-      #executor.execute!('create-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+      # executor.execute!('create-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
     end
   end
 
@@ -54,7 +54,7 @@ action :create do
       Chef::Log.debug("#{@new_resource} config up to date - skipping update")
     else
       converge_by("Update #{@new_resource} config") do
-        #executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+        # executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
       end
     end
   else
@@ -101,8 +101,8 @@ def current_job
   xml = REXML::Document.new(response.rstrip)
 
   @current_job = {
-    xml:     xml,
-    raw:     response
+    :xml => xml,
+    :raw => response
   }
   @current_job
 end

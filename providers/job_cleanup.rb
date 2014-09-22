@@ -20,7 +20,7 @@
 include Jenkins::Helper
 
 action :execute do
-  Chef::Log.debug("jr_jenkins_job_cleanup: execute begin")
+  Chef::Log.debug('jr_jenkins_job_cleanup: execute begin')
 
   jobs = executor.groovy!('hudson.model.Hudson.instance.items.each() { println it.name }').split
   Chef::Log.debug("Jenkins jobs: #{jobs}")
@@ -39,5 +39,5 @@ action :execute do
     end
   end
 
-  Chef::Log.debug("jr_jenkins_job_cleanup: execute end")
+  Chef::Log.debug('jr_jenkins_job_cleanup: execute end')
 end

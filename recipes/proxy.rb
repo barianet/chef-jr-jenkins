@@ -9,13 +9,13 @@
 
 # Install SSL certificate.
 if node['jr-jenkins']['proxy']['ssl_certificate']
-  include_recipe "ssl_certificates"
+  include_recipe 'ssl_certificates'
   ssl_certificate node['jr-jenkins']['proxy']['ssl_certificate']
 end
 
 # Ensure the htpasswd file is present.
 if node['jr-jenkins']['proxy']['basic_auth_user']
-  include_recipe "htpasswd"
+  include_recipe 'htpasswd'
   basic_auth_htpasswd = File.join(node['jenkins']['master']['home'], '.htpasswd')
   htpasswd basic_auth_htpasswd do
     user node['jr-jenkins']['proxy']['basic_auth_user']
@@ -24,11 +24,11 @@ if node['jr-jenkins']['proxy']['basic_auth_user']
 end
 
 # Ensure Apache is ready to proxy.
-include_recipe "apache2"
-include_recipe "apache2::mod_proxy"
-include_recipe "apache2::mod_proxy_http"
+include_recipe 'apache2'
+include_recipe 'apache2::mod_proxy'
+include_recipe 'apache2::mod_proxy_http'
 if node['jr-jenkins']['proxy']['ssl_certificate']
-  include_recipe "apache2::mod_ssl"
+  include_recipe 'apache2::mod_ssl'
 end
 
 # Define the web_app for the proxy.

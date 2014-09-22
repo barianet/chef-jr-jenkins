@@ -34,9 +34,9 @@ action :create do
   t.source(@new_resource.template)
   t.cookbook(@new_resource.cookbook)
   t.variables(
-    new_resource: @new_resource,
-    name: @new_resource.name,
-    jobs: @new_resource.jobs,
+    :new_resource => @new_resource,
+    :name => @new_resource.name,
+    :jobs => @new_resource.jobs,
   )
   t.run_action(:create)
   @new_resource.config = t.path
@@ -95,8 +95,8 @@ def current_view
   xml = REXML::Document.new(response.rstrip)
 
   @current_view = {
-    xml:     xml,
-    raw:     response,
+    :xml => xml,
+    :raw => response,
   }
   @current_view
 end

@@ -4,7 +4,7 @@
 #
 
 # Jenkins plugins
-default['jr-jenkins']['plugins'] = %w[
+default['jr-jenkins']['plugins'] = %w(
   git
   git-client
   github
@@ -14,4 +14,4 @@ default['jr-jenkins']['plugins'] = %w[
   scm-api
   ssh-credentials
   ws-cleanup
-]
+)

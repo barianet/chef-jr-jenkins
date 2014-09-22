@@ -13,4 +13,4 @@ default['jr-jenkins']['proxy']['ssl_certificate'] = nil
 default['jr-jenkins']['proxy']['basic_auth_user'] = nil
 default['jr-jenkins']['proxy']['basic_auth_pass'] = nil
 # Allow from github.com (for github webhook)
-default['jr-jenkins']['proxy']['basic_auth_allow_from'] = [ '192.30.252' ]
+default['jr-jenkins']['proxy']['basic_auth_allow_from'] = ['192.30.252']
