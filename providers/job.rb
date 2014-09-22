@@ -49,12 +49,16 @@ action :create do
     end
   end
 
-  if correct_config?
-    Chef::Log.debug("#{@new_resource} config up to date - skipping update")
-  else
-    converge_by("Update #{@new_resource} config") do
-      #executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+  if verify_config?
+    if correct_config?
+      Chef::Log.debug("#{@new_resource} config up to date - skipping update")
+    else
+      converge_by("Update #{@new_resource} config") do
+        #executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+      end
     end
+  else
+    Chef::Log.debug("#{new_resource} exists - skipping config verification")
   end
 end
 
@@ -67,11 +71,12 @@ def load_current_resource
   @current_resource.params(@new_resource.params)
   @current_resource.template(@new_resource.template)
   @current_resource.cookbook(@new_resource.cookbook)
+  @current_resource.verify_config(@new_resource.verify_config)
 
   if current_job
-    @current_resource.exists  = true
+    @current_resource.exists = true
   else
-    @current_resource.exists  = false
+    @current_resource.exists = false
   end
 
   @current_resource
@@ -85,9 +90,9 @@ end
 #   it does
 #
 def current_job
-  return @current_view if @current_view
+  return @current_job if @current_job
 
-  Chef::Log.debug "Load #{@new_resource} view information"
+  Chef::Log.debug "Load #{@new_resource} job information"
 
   response = executor.execute('get-job', Shellwords.escape(@new_resource.name))
   return nil if response.nil? || response =~ /No job named/
@@ -95,7 +100,7 @@ def current_job
   Chef::Log.debug "Parse #{@new_resource} as XML"
   xml = REXML::Document.new(response.rstrip)
 
-  @current_view = {
+  @current_job = {
     xml:     xml,
     raw:     response
   }
@@ -116,8 +121,17 @@ def correct_config?
   current = StringIO.new
   wanted  = StringIO.new
 
-  current_view[:xml].write(current, 2)
+  current_job[:xml].write(current, 2)
   REXML::Document.new(::File.read(@new_resource.config).rstrip).write(wanted, 2)
 
   current.string == wanted.string
+end
+
+#
+# Helper method for determining whether we need to verify the config.
+#
+# @return [Boolean]
+#
+def verify_config?
+  @new_resource.verify_config
 end
