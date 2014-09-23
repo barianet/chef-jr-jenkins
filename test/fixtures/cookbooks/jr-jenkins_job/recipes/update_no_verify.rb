@@ -3,7 +3,7 @@ include_recipe 'jr-jenkins::default'
 # Test updating a job, but skipping verification.
 jr_jenkins_job 'my-job' do
   params(
-    'param1' => 'hello again, ',
+    'param1' => 'hello',
     'param2' => 'world'
   )
   template 'config.xml.erb'
