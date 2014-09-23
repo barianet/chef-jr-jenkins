@@ -41,24 +41,29 @@ action :create do
   t.run_action(:create)
   @new_resource.config = t.path
 
+  # Check whether the job exists in Jenkins.
   if @current_resource.exists
     Chef::Log.debug("#{@new_resource} exists - skipping create")
-  else
-    converge_by("Create #{@new_resource}") do
-      # executor.execute!('create-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
-    end
-  end
 
-  if verify_config?
-    if correct_config?
-      Chef::Log.debug("#{@new_resource} config up to date - skipping update")
-    else
-      converge_by("Update #{@new_resource} config") do
-        # executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+    # Job exists, check whether we need to run update-job.
+    if verify_config?
+      if correct_config?
+        Chef::Log.debug("#{@new_resource} config up to date - skipping update")
+      else
+        # Update the config to match the templated config.
+        converge_by("Update #{@new_resource} config") do
+          executor.execute!('update-job', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+        end
       end
+    else
+      # Job exists, but we're not verifying the config.
+      Chef::Log.debug("#{new_resource} exists - skipping config verification")
     end
   else
-    Chef::Log.debug("#{new_resource} exists - skipping config verification")
+    # Create the job in Jenkins.
+    converge_by("Create #{@new_resource}") do
+      executor.execute!('create-job', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+    end
   end
 end
 
@@ -73,13 +78,28 @@ def load_current_resource
   @current_resource.cookbook(@new_resource.cookbook)
   @current_resource.verify_config(@new_resource.verify_config)
 
-  if current_job
+  if job_exists?
     @current_resource.exists = true
   else
     @current_resource.exists = false
   end
 
   @current_resource
+end
+
+#
+# Validate that the job exists.
+#
+# There is a speed boost if the master backend is on localhost, because we can
+# check the filesystem for the config.xml, rather than querying the backend via
+# the CLI jar, which requires overhead.
+#
+def job_exists?
+  if node['jenkins']['master']['host'] == 'localhost'
+    ::File.exist?(::File.join(node['jenkins']['master']['home'], 'jobs', @new_resource.name, 'config.xml'))
+  else
+    current_job
+  end
 end
 
 #
