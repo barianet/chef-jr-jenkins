@@ -15,4 +15,8 @@ suites:
   - name: server
     run_list:
       - recipe[jr-jenkins::server]
-    attributes:
+
+  - name: job
+    run_list:
+      - recipe[jr-jenkins::server]
+      - recipe[jr-jenkins_job::update_no_verify]

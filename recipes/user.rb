@@ -14,8 +14,8 @@ public_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user'
 # When running in Chef Solo, we can't set values on the node. (At least not
 # permanently.) So, we read the key pair from the ssh_path.
 if Chef::Config[:solo] && !(node['jr-jenkins']['user']['public_key'] || node['jr-jenkins']['user']['private_key'])
-  node.set['jr-jenkins']['user']['private_key'] = File.exists?(private_key_path) && File.open(private_key_path, 'rb') { |f| f.read }
-  node.set['jr-jenkins']['user']['public_key'] = File.exists?(public_key_path) && File.open(public_key_path, 'rb') { |f| f.read }
+  node.set['jr-jenkins']['user']['private_key'] = File.exist?(private_key_path) && File.open(private_key_path, 'rb') { |f| f.read }
+  node.set['jr-jenkins']['user']['public_key'] = File.exist?(public_key_path) && File.open(public_key_path, 'rb') { |f| f.read }
 end
 
 # Create a public/private key pair if not provided on the node.
@@ -29,7 +29,7 @@ end
 # Set the private key on the Jenkins executor. Do this here so the private
 # key is available to the executor for the following jobs. Otherwise, we want
 # to set this after we enable authentication.
-if node['jenkins']['executor']['private_key'].nil? && File.exists?(private_key_path)
+if node['jenkins']['executor']['private_key'].nil? && File.exist?(private_key_path)
   node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
 end
 
@@ -59,7 +59,7 @@ jenkins_script 'add_authentication' do
 end
 
 # Set the private key on the Jenkins executor.
-ruby_block "jenkins_executor_key" do
+ruby_block 'jenkins_executor_key' do
   block do
     node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
   end
@@ -70,7 +70,7 @@ end
 directory ssh_path do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
-  mode "0700"
+  mode '0700'
   recursive false
 end
 
@@ -78,7 +78,7 @@ end
 file public_key_path do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
-  mode "0644"
+  mode '0644'
   content node['jr-jenkins']['user']['public_key']
 end
 
@@ -86,8 +86,8 @@ end
 file private_key_path do
   owner node['jenkins']['master']['user']
   group node['jenkins']['master']['group']
-  mode "0600"
+  mode '0600'
   content node['jr-jenkins']['user']['private_key']
-  notifies :create, "ruby_block[jenkins_executor_key]", :delayed
-  notifies :execute, "jenkins_script[add_authentication]", :delayed
+  notifies :create, 'ruby_block[jenkins_executor_key]', :delayed
+  notifies :execute, 'jenkins_script[add_authentication]', :delayed
 end

@@ -8,16 +8,16 @@
 #
 
 # Install Java.
-include_recipe "java"
+include_recipe 'java'
 
 # Install Jenkins master.
-include_recipe "jenkins::master"
+include_recipe 'jenkins::master'
 
 # Set up Jenkins admin user.
-include_recipe "jr-jenkins::user"
+include_recipe 'jr-jenkins::user'
 
 # Set up Jenkins plugins.
-include_recipe "jr-jenkins::plugins"
+include_recipe 'jr-jenkins::plugins'
 
 # Set up Apache proxy.
-include_recipe "jr-jenkins::proxy"
+include_recipe 'jr-jenkins::proxy'

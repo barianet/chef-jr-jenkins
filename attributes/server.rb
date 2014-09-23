@@ -9,4 +9,4 @@ default['jenkins']['master']['install_method'] = 'package'
 default['jenkins']['master']['version'] = '1.555-1.1'
 
 # Jenkins master overrides
-default['jenkins']['master']['jvm_options'] = "-Dorg.apache.commons.jelly.tags.fmt.timeZone=America/New_York"
+default['jenkins']['master']['jvm_options'] = '-Dorg.apache.commons.jelly.tags.fmt.timeZone=America/New_York'

@@ -11,19 +11,19 @@ end
 
 describe service('jenkins') do
 
-  it "does not allow connections from anonymous traffic" do
+  it 'does not allow connections from anonymous traffic' do
     # @todo
-    skip "@todo"
+    skip '@todo'
   end
 
   it "has user 'chef'" do
     # @todo
-    skip "@todo"
+    skip '@todo'
   end
 
   it "can authenticate as 'chef'" do
     # @todo
-    skip "@todo"
+    skip '@todo'
   end
 
 end
