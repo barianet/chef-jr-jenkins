@@ -36,7 +36,7 @@ action :create do
   t.variables(
     :new_resource => @new_resource,
     :name => @new_resource.name,
-    :params => @new_resource.params,
+    :params => @new_resource.params
   )
   t.run_action(:create)
   @new_resource.config = t.path

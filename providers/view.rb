@@ -36,7 +36,7 @@ action :create do
   t.variables(
     :new_resource => @new_resource,
     :name => @new_resource.name,
-    :jobs => @new_resource.jobs,
+    :jobs => @new_resource.jobs
   )
   t.run_action(:create)
   @new_resource.config = t.path
@@ -96,7 +96,7 @@ def current_view
 
   @current_view = {
     :xml => xml,
-    :raw => response,
+    :raw => response
   }
   @current_view
 end

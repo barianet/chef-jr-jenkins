@@ -39,9 +39,9 @@ web_app node['jr-jenkins']['proxy']['server_name'] do
   if node['jr-jenkins']['proxy']['ssl_certificate']
     server_ip_ssl node['jr-jenkins']['proxy']['server_ip_ssl']
     server_port_ssl node['jr-jenkins']['proxy']['server_port_ssl']
-    ssl_cert_file "#{node[:ssl_certificates][:path]}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.pem"
-    ssl_key_file "#{node[:ssl_certificates][:private_path]}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.key"
-    ssl_chain_file "#{node[:ssl_certificates][:path]}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.ca-bundle"
+    ssl_cert_file "#{node['ssl_certificates']['path']}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.pem"
+    ssl_key_file "#{node['ssl_certificates']['private_path']}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.key"
+    ssl_chain_file "#{node['ssl_certificates']['path']}/#{node['jr-jenkins']['proxy']['ssl_certificate']}.ca-bundle"
   end
   basic_auth_htpasswd basic_auth_htpasswd
   basic_auth_allow_from node['jr-jenkins']['proxy']['basic_auth_allow_from']
