@@ -42,18 +42,18 @@ action :create do
   @new_resource.config = t.path
 
   if @current_resource.exists
-    Chef::Log.debug("#{@new_resource} exists - skipping")
+    Chef::Log.debug("#{@new_resource} exists - skipping create")
+
+    if correct_config?
+      Chef::Log.debug("#{@new_resource} config up to date - skipping update")
+    else
+      converge_by("Update #{@new_resource} config") do
+        executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
+      end
+    end
   else
     converge_by("Create #{@new_resource}") do
       executor.execute!('create-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
-    end
-  end
-
-  if correct_config?
-    Chef::Log.debug("#{@new_resource} config up to date - skipping")
-  else
-    converge_by("Update #{@new_resource} config") do
-      executor.execute!('update-view', Shellwords.escape(@new_resource.name), '<', Shellwords.escape(@new_resource.config))
     end
   end
 end
