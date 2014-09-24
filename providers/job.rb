@@ -35,9 +35,9 @@ action :create do
   t.cookbook(@new_resource.cookbook)
   t.variables(
     :new_resource => @new_resource,
-    :name => @new_resource.name,
-    :params => @new_resource.params
+    :name => @new_resource.name
   )
+  t.variables.merge!(@new_resource.params)
   t.run_action(:create)
   @new_resource.config = t.path
 
