@@ -6,6 +6,7 @@ driver:
 
 provisioner:
   name: chef_solo
+  data_path: "test/fixtures"
 
 platforms:
   - name: centos-6.4
