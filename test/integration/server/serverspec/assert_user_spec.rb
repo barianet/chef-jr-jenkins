@@ -1,7 +1,6 @@
 require "#{ENV['BUSSER_ROOT']}/../kitchen/data/serverspec_helper.rb"
 
 describe service('jenkins') do
-
   it 'does not allow connections from anonymous traffic' do
     # @todo
     skip '@todo'
@@ -16,5 +15,4 @@ describe service('jenkins') do
     # @todo
     skip '@todo'
   end
-
 end

@@ -1,12 +1,12 @@
-source "https://api.berkshelf.com"
+source 'https://api.berkshelf.com'
 
 # Load from cookbook metadata.rb dependencies
 metadata
 
 # Specify specific versions/sources of dependencies
-cookbook "jenkins", "~> 2.0.0"
-cookbook "ssl_certificates", "~> 1.3.0", github: "benclark/chef-ssl_certificates"
+cookbook 'jenkins', '~> 2.0.0'
+cookbook 'ssl_certificates', '~> 1.3.0', :github => 'benclark/chef-ssl_certificates'
 
 group :integration do
-  cookbook 'jr-jenkins_job', path: 'test/fixtures/cookbooks/jr-jenkins_job'
+  cookbook 'jr-jenkins_job', :path => 'test/fixtures/cookbooks/jr-jenkins_job'
 end
