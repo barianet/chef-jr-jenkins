@@ -14,7 +14,11 @@ include_recipe 'java'
 include_recipe 'jenkins::master'
 
 # Set up Jenkins admin user.
-include_recipe 'jr-jenkins::user'
+if node['jr-jenkins']['user_noop']
+  include_recipe 'jr-jenkins::user' unless node['jr-jenkins']['user_noop'] == true
+else
+  include_recipe 'jr-jenkins::user'
+end
 
 # Set up Jenkins plugins.
 include_recipe 'jr-jenkins::plugins'
