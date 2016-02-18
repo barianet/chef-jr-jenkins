@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+use_inline_resources
 include Jenkins::Helper
 require 'rexml/document'
 require 'shellwords'
@@ -78,11 +78,11 @@ def load_current_resource
   @current_resource.cookbook(@new_resource.cookbook)
   @current_resource.verify_config(@new_resource.verify_config)
 
-  if job_exists?
-    @current_resource.exists = true
-  else
-    @current_resource.exists = false
-  end
+  @current_resource.exists = if job_exists?
+                               true
+                             else
+                               false
+                             end
 
   @current_resource
 end

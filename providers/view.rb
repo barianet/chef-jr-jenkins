@@ -67,11 +67,11 @@ def load_current_resource
   @current_resource.jobs(@new_resource.jobs)
   @current_resource.template(@new_resource.template)
 
-  if current_view
-    @current_resource.exists  = true
-  else
-    @current_resource.exists  = false
-  end
+  @current_resource.exists = if current_view
+                               true
+                             else
+                               false
+                             end
 
   @current_resource
 end
