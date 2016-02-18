@@ -6,12 +6,19 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+chef_gem "chef-rewind"
+require 'chef/rewind'
 
 # Install Java.
 include_recipe 'java'
 
 # Install Jenkins master.
 include_recipe 'jenkins::master'
+
+rewind "package[jenkins]" do
+  version node['jenkins']['master']['version']
+  timeout 1800
+end
 
 # Set up Jenkins admin user.
 if node['jr-jenkins']['user_noop']
