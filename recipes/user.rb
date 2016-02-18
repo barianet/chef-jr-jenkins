@@ -14,8 +14,12 @@ public_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user'
 # When running in Chef Solo, we can't set values on the node. (At least not
 # permanently.) So, we read the key pair from the ssh_path.
 if Chef::Config[:solo] && !(node['jr-jenkins']['user']['public_key'] || node['jr-jenkins']['user']['private_key'])
-  node.set['jr-jenkins']['user']['private_key'] = File.exist?(private_key_path) && File.open(private_key_path, 'rb') { |f| f.read }
-  node.set['jr-jenkins']['user']['public_key'] = File.exist?(public_key_path) && File.open(public_key_path, 'rb') { |f| f.read }
+  if File.exist?(private_key_path) && File.open(private_key_path, 'rb')
+    node.set['jr-jenkins']['user']['private_key'] = File.open(private_key_path, &:read)
+  end
+  if File.exist?(public_key_path) && File.open(public_key_path, 'rb')
+    node.set['jr-jenkins']['user']['public_key'] = File.open(public_key_path, &:read)
+  end
 end
 
 # Create a public/private key pair if not provided on the node.
