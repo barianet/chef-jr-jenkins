@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+use_inline_resources
 include Jenkins::Helper
 require 'rexml/document'
 require 'shellwords'
