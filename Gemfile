@@ -9,10 +9,12 @@ end
 
 group :integration do
   gem 'test-kitchen'
-  gem 'kitchen-sync'
-  gem 'kitchen-ec2'
 end
 
 group :kitchen_vagrant do
   gem 'kitchen-vagrant'
+end
+
+group :docker do
+  gem 'kitchen-docker'
 end
