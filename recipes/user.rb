@@ -39,7 +39,7 @@ end
 
 # Create the Jenkins Chef user with the public key.
 jenkins_user node['jr-jenkins']['user']['name'] do
-  public_keys [ node['jr-jenkins']['user']['public_key'] ]
+  public_keys [node['jr-jenkins']['user']['public_key']]
 end
 
 # Enable authentication.
