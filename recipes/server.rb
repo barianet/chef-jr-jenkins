@@ -15,11 +15,6 @@ include_recipe 'java'
 # Install Jenkins master.
 include_recipe 'jenkins::master'
 
-rewind 'package[jenkins]' do
-  version node['jenkins']['master']['version']
-  timeout 1800
-end
-
 # Set up Jenkins admin user.
 if node['jr-jenkins']['user_noop']
   include_recipe 'jr-jenkins::user' unless node['jr-jenkins']['user_noop'] == true
