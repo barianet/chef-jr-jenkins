@@ -28,7 +28,15 @@ action :execute do
 
   if !jobs.nil? && !jobs.empty?
     # Get the diff between the real jobs and the defined jobs.
-    jobs_to_remove = jobs - new_resource.whitelist
+    if jobs.class == Array && new_resource.whitelist.class == String
+      jobs_to_remove = jobs - new_resource.whitelist.split(",")
+    elsif jobs.class == String && new_resource.whitelist.class == String
+      jobs_to_remove = jobs.split(",") - new_resource.whitelist.split(",")
+    elsif jobs.class == String && new_resource.whitelist.class == Array
+      jobs_to_remove = jobs.split(",") - new_resource.whitelist
+    else
+      jobs_to_remove = jobs - new_resource.whitelist
+    end
     Chef::Log.debug("Jenkins jobs to remove: #{jobs_to_remove}")
   end
 
