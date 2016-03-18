@@ -3,8 +3,6 @@
 # Attributes:: server
 #
 
-# Pin to 1.555-1.1 to fix this issue:
-# https://github.com/opscode-cookbooks/jenkins/issues/171
 default['jenkins']['master']['install_method'] = 'package'
 default['jenkins']['master']['version'] = '1.652-1.1'
 # Point to the Jackson River Jenkins CI Repo Mirror on S3
