@@ -6,8 +6,6 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-chef_gem 'chef-rewind'
-require 'chef/rewind'
 
 # Install Java.
 include_recipe 'java'

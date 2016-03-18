@@ -13,6 +13,7 @@ end
 
 # Test jr_jenkins_job_cleanup
 chef_defined_jobs = ['testclient-core', 'testclient-salesforce']
-jr_jenkins_job_cleanup chef_defined_jobs do
+jr_jenkins_job_cleanup 'job_cleanup' do
+  whitelist chef_defined_jobs
   only_if { node['jr-hosted-springboard']['jenkins_job_cleanup'] }
 end
