@@ -4,7 +4,7 @@ maintainer_email 'benjamin.clark@jacksonriver.com'
 license 'All rights reserved'
 description 'Installs/Configures Jenkins and Jenkins jobs'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '0.2.17'
+version '0.2.18'
 
 depends 'apache2'
 depends 'htpasswd'
