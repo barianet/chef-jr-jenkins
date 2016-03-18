@@ -13,3 +13,4 @@ default['jenkins']['master']['jvm_options'] = '-Dorg.apache.commons.jelly.tags.f
 
 # We need Java 7 for new Jenkins
 default['java']['jdk_version'] = '7'
+default['jenkins']['java'] = '/usr/bin/java'
