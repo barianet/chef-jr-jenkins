@@ -1,3 +1,7 @@
 ---
 driver:
   name: docker
+
+provisioner:
+  solo_rb:
+    file_atomic_update: false

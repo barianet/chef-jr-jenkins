@@ -1,4 +1,4 @@
-require "#{ENV['BUSSER_ROOT']}/../kitchen/data/serverspec_helper.rb"
+require 'spec_helper'
 
 describe service('httpd') do
   it 'is listening on port 80' do

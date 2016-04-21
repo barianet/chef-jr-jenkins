@@ -20,12 +20,12 @@
 actions :create, :delete
 default_action :create
 
-attribute :name, :name_attribute => true, :kind_of => String, :required => true
-attribute :params, :kind_of => Hash, :required => true
+attribute :name, name_attribute: true, kind_of: String, required: true
+attribute :params, kind_of: Hash, required: true
 
-attribute :template, :kind_of => String, :default => 'jenkins-job.xml.erb'
-attribute :cookbook, :kind_of => String, :default => 'jr-jenkins'
-attribute :verify_config, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :template, kind_of: String, default: 'jenkins-job.xml.erb'
+attribute :cookbook, kind_of: String, default: 'jr-jenkins'
+attribute :verify_config, kind_of: [TrueClass, FalseClass], default: false
 
 attr_accessor :config
 attr_accessor :exists

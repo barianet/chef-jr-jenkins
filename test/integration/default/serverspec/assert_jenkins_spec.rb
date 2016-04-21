@@ -1,4 +1,4 @@
-require "#{ENV['BUSSER_ROOT']}/../kitchen/data/serverspec_helper.rb"
+require 'spec_helper'
 
 describe service('jenkins') do
   it 'is listening on port 8080' do

@@ -2,96 +2,65 @@
 # Cookbook Name:: jr-jenkins
 # Recipe:: user
 #
-# Copyright (C) 2013 Jackson River
-#
-# All rights reserved - Do Not Redistribute
-#
+# Copyright (c) 2016 Jackson River, All Rights Reserved.
 
-ssh_path = File.join(node['jenkins']['master']['home'], '.ssh')
-private_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}")
-public_key_path = File.join(ssh_path, "jenkins_user__#{node['jr-jenkins']['user']['name']}.pub")
+require 'openssl'
+require 'net/ssh'
 
-# When running in Chef Solo, we can't set values on the node. (At least not
-# permanently.) So, we read the key pair from the ssh_path.
-if Chef::Config[:solo] && !(node['jr-jenkins']['user']['public_key'] || node['jr-jenkins']['user']['private_key'])
-  if File.exist?(private_key_path) && File.open(private_key_path, 'rb')
-    node.set['jr-jenkins']['user']['private_key'] = File.open(private_key_path, &:read)
+# Get public/private keypair for the admin user from the data bag.
+admin_user = data_bag_item('jr-jenkins-users', node['jr-jenkins']['user']['name'])
+key = OpenSSL::PKey::RSA.new(admin_user['private_key'])
+admin_user_private_key = key.to_pem
+admin_user_public_key = "#{key.ssh_type} #{[key.to_blob].pack('m0')}"
+
+# If security was enabled in a previous run, then set the private key in the
+# run_state as required by the Jenkins cookbook.
+ruby_block 'set jenkins private key' do
+  block do
+    node.run_state[:jenkins_private_key] = admin_user_private_key # ~FC001
   end
-  if File.exist?(public_key_path) && File.open(public_key_path, 'rb')
-    node.set['jr-jenkins']['user']['public_key'] = File.open(public_key_path, &:read)
-  end
+  only_if { node['jr-jenkins']['security_enabled'] }
 end
 
-# Create a public/private key pair if not provided on the node.
-unless node['jr-jenkins']['user']['private_key']
-  require 'net/ssh'
-  key = OpenSSL::PKey::RSA.new(4096)
-  node.set['jr-jenkins']['user']['private_key'] = key.to_pem
-  node.set['jr-jenkins']['user']['public_key'] = "#{key.ssh_type} #{[key.to_blob].pack('m0')}"
-end
-
-# Set the private key on the Jenkins executor. Do this here so the private
-# key is available to the executor for the following jobs. Otherwise, we want
-# to set this after we enable authentication.
-if node['jenkins']['executor']['private_key'].nil? && File.exist?(private_key_path)
-  node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
-end
-
-# Create the Jenkins Chef user with the public key.
+# Ensure the admin user. Notify the resource to configure the permissions for
+# the admin user.
 jenkins_user node['jr-jenkins']['user']['name'] do
-  public_keys [node['jr-jenkins']['user']['public_key']]
+  password admin_user['password']
+  public_keys [admin_user_public_key]
+  not_if { node['jr-jenkins']['security_enabled'] }
+  notifies :execute, 'jenkins_script[configure permissions]', :immediately
 end
 
-# Enable authentication.
-jenkins_script 'add_authentication' do
+# Configure the permissions so that login is required and the admin user is an
+# administrator. After this point the private key will be required to execute
+# jenkins scripts (including querying if users exist) so we notify the `set the
+# security_enabled flag` resource to set this up.
+jenkins_script 'configure permissions' do
   command <<-EOH.gsub(/^ {4}/, '')
     import jenkins.model.*
     import hudson.security.*
-    import org.jenkinsci.plugins.*
 
     def instance = Jenkins.getInstance()
 
-    def securityRealm = new HudsonPrivateSecurityRealm(true)
-    instance.setSecurityRealm(securityRealm)
+    def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+    instance.setSecurityRealm(hudsonRealm)
 
-    def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+    def strategy = new GlobalMatrixAuthorizationStrategy()
+    strategy.add(Jenkins.ADMINISTER, "#{node['jr-jenkins']['user']['name']}")
     instance.setAuthorizationStrategy(strategy)
 
     instance.save()
   EOH
+  notifies :create, 'ruby_block[set the security_enabled flag]', :immediately
   action :nothing
 end
 
-# Set the private key on the Jenkins executor.
-ruby_block 'jenkins_executor_key' do
+# Set the security_enabled flag and set the run_state to use the private key.
+ruby_block 'set the security_enabled flag' do
   block do
-    node.set['jenkins']['executor']['private_key'] = node['jr-jenkins']['user']['private_key']
+    node.run_state[:jenkins_private_key] = admin_user_private_key # ~FC001
+    node.set['jr-jenkins']['security_enabled'] = true
+    node.save
   end
   action :nothing
-end
-
-# Ensure the ssh_path.
-directory ssh_path do
-  owner node['jenkins']['master']['user']
-  group node['jenkins']['master']['group']
-  mode '0700'
-  recursive false
-end
-
-# Write the public key file.
-file public_key_path do
-  owner node['jenkins']['master']['user']
-  group node['jenkins']['master']['group']
-  mode '0644'
-  content node['jr-jenkins']['user']['public_key']
-end
-
-# Write the private key file.
-file private_key_path do
-  owner node['jenkins']['master']['user']
-  group node['jenkins']['master']['group']
-  mode '0600'
-  content node['jr-jenkins']['user']['private_key']
-  notifies :create, 'ruby_block[jenkins_executor_key]', :delayed
-  notifies :execute, 'jenkins_script[add_authentication]', :delayed
 end

@@ -7,11 +7,15 @@ group :lint do
   gem 'rubocop'
 end
 
+group :test do
+  gem 'chefspec'
+end
+
 group :integration do
   gem 'test-kitchen'
 end
 
-group :kitchen_vagrant do
+group :vagrant do
   gem 'kitchen-vagrant'
 end
 

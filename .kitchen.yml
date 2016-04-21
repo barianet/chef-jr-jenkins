@@ -1,22 +1,18 @@
 ---
 driver:
   name: vagrant
-  customize:
-    memory: 1024
+  network:
+    - ["forwarded_port", {guest: 80, host: 8080}]
 
 provisioner:
-  name: chef_solo
-  data_path: "test/fixtures"
+  name: chef_zero
+  data_path: test/fixtures
+  data_bags_path: test/fixtures/data_bags
 
 platforms:
-  - name: centos-6.6
+  - name: centos-6.7
 
 suites:
-  - name: server
+  - name: default
     run_list:
-      - recipe[jr-jenkins::server]
-
-  - name: job
-    run_list:
-      - recipe[jr-jenkins::server]
-      - recipe[jr-jenkins_job::update_no_verify]
+      - recipe[jr-jenkins-test::default]
