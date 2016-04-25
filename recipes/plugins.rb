@@ -10,5 +10,6 @@ node['jr-jenkins']['plugins'].each do |plugin|
   plugin, version = plugin.split('=')
   jenkins_plugin plugin do
     version version if version
+    notifies :restart, 'service[jenkins]', :delayed
   end
 end
