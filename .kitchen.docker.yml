@@ -3,5 +3,5 @@ driver:
   name: docker
 
 provisioner:
-  solo_rb:
+  client_rb:
     file_atomic_update: false
