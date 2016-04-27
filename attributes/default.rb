@@ -17,6 +17,7 @@ default['jenkins']['master']['repository'] = 'http://jr-repo-01.s3-website-us-ea
 
 # Jenkins master overrides
 # default['jenkins']['master']['jvm_options'] = '-Dorg.apache.commons.jelly.tags.fmt.timeZone=America/New_York'
+default['jenkins']['master']['listen_address'] = '127.0.0.1'
 
 # We need Java 7 for Jenkins
 default['java']['jdk_version'] = '7'
