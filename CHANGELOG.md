@@ -1,3 +1,9 @@
+v0.3.0 (2016-04-27)
+-------------------
+- Refactored cookbook to fix authentication and support latest Jenkins releases
+- Added basic Chefspec test suites, updated Serverspec suites
+- See [pull request #7](https://github.com/JacksonRiver/chef-jr-jenkins/pull/7) for required downstream changes
+
 v0.2.18 (2016-03-18)
 --------------------
 - Upgrade Jenkins to 1.652
