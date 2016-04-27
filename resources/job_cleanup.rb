@@ -20,5 +20,5 @@
 actions :execute
 default_action :execute
 
-attribute :name, :name_attribute => true, :kind_of => String, :required => true
-attribute :whitelist, :kind_of => Array, :required => true
+attribute :name, name_attribute: true, kind_of: String, required: true
+attribute :whitelist, kind_of: Array, required: true

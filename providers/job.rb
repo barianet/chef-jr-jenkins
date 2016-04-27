@@ -34,8 +34,8 @@ action :create do
   t.source(@new_resource.template)
   t.cookbook(@new_resource.cookbook)
   t.variables(
-    :new_resource => @new_resource,
-    :name => @new_resource.name
+    new_resource: @new_resource,
+    name: @new_resource.name
   )
   t.variables.merge!(@new_resource.params)
   t.run_action(:create)
@@ -121,8 +121,8 @@ def current_job
   xml = REXML::Document.new(response.rstrip)
 
   @current_job = {
-    :xml => xml,
-    :raw => response
+    xml: xml,
+    raw: response
   }
   @current_job
 end

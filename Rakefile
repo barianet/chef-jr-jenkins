@@ -14,11 +14,15 @@
 require 'bundler/setup'
 require 'rubocop/rake_task'
 require 'foodcritic'
+require 'rspec/core/rake_task'
 
 desc 'Run linting'
 namespace :linting do
   desc 'Run FoodCritic linting'
-  FoodCritic::Rake::LintTask.new(:foodcritic) do ||
+  FoodCritic::Rake::LintTask.new(:foodcritic) do |task|
+    task.options = {
+      fail_tags: %w(~FC059)
+    }
   end
 
   desc 'Run RuboCop linting'
@@ -26,6 +30,11 @@ namespace :linting do
     # Abort rake on failure
     task.fail_on_error = true
   end
+end
+
+desc 'Run rspec/chefspec'
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = '--format documentation'
 end
 
 desc 'Run Test Kitchen integration tests'
@@ -51,7 +60,7 @@ namespace :integration do
     action = 'test' if action.nil?
     require 'kitchen'
     Kitchen.logger = Kitchen.default_file_logger
-    config = { :loader => Kitchen::Loader::YAML.new(loader_config) }
+    config = { loader: Kitchen::Loader::YAML.new(loader_config) }
     kitchen_instances(regexp, config).each { |i| i.send(action) }
   end
 
@@ -62,8 +71,42 @@ namespace :integration do
 
   desc 'Run integration tests with kitchen-docker'
   task :docker, [:regexp, :action] do |_t, args|
-    run_kitchen(args.action, args.regexp, :local_config => '.kitchen.docker.yml')
+    run_kitchen(args.action, args.regexp, local_config: '.kitchen.docker.yml')
   end
 end
 
-task :default => %w(linting:foodcritic linting:rubocop integration:docker)
+task default: %w(linting:foodcritic linting:rubocop spec integration:docker)
+task local_default: %w(linting:foodcritic linting:rubocop spec)
+
+desc 'Release the software artifact'
+task release: [:local_default] do
+  date = Time.now.strftime('%Y-%m-%d')
+  text = File.read('./metadata.rb')
+  b = 1
+  b += text.match(/version\D+(((?:\d+\.)+)(\d+))/)[3].to_i
+  find = Regexp.last_match(1)
+  new_version = "#{Regexp.last_match(2)}#{b}"
+  text.gsub!(/#{find}/, new_version)
+  name = text.match(/name\s*\S(.*)\S/)[1].to_s
+  pr_title = `git log --merges --pretty=format:"%b" | grep -v '^$' | head -n 1`
+  puts 'Rake Release: Updating CHANGELOG.md'
+  original_file = './CHANGELOG.md'
+  new_file = original_file + '.new'
+  File.open(new_file, 'w') do |fo|
+    fo << "#{new_version} (#{date})\n"
+    fo << "-------------------\n"
+    fo << "#{pr_title}\n"
+    File.foreach(original_file) do |li|
+      fo.puts li
+    end
+  end
+  File.rename(new_file, original_file)
+  puts "Rake Release: Updating version from #{find} to #{new_version}"
+  File.open('./metadata.rb', 'w') { |file| file.puts text }
+  sh('git', 'commit', './metadata.rb', './CHANGELOG.md', '-m', "'Version bump to #{new_version}'")
+  sh('git', 'push')
+  sh('git', 'tag', '-a', "v#{new_version}", '-m', "'rake released #{new_version}'")
+  sh('git', 'push', '--tags')
+  sh('berks', 'install')
+  sh('berks', 'upload', name)
+end

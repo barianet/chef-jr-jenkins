@@ -20,11 +20,11 @@
 actions :create, :delete
 default_action :create
 
-attribute :name, :name_attribute => true, :kind_of => String, :required => true
-attribute :jobs, :kind_of => Array, :required => true
+attribute :name, name_attribute: true, kind_of: String, required: true
+attribute :jobs, kind_of: Array, required: true
 
-attribute :template, :kind_of => String, :default => 'jenkins-view.xml.erb'
-attribute :cookbook, :kind_of => String, :default => 'jr-jenkins'
+attribute :template, kind_of: String, default: 'jenkins-view.xml.erb'
+attribute :cookbook, kind_of: String, default: 'jr-jenkins'
 
 attr_accessor :config
 attr_accessor :exists

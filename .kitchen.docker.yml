@@ -1,3 +1,7 @@
 ---
 driver:
   name: docker
+
+provisioner:
+  client_rb:
+    file_atomic_update: false
