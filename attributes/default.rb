@@ -39,3 +39,5 @@ default['jr-jenkins']['proxy']['ssl_certificate'] = nil
 default['jr-jenkins']['proxy']['basic_auth_user'] = nil
 default['jr-jenkins']['proxy']['basic_auth_pass'] = nil
 default['jr-jenkins']['proxy']['basic_auth_allow_from'] = %w()
+default['jr-jenkins']['proxy']['sslprotocol'] = ' -All +TLSv1.2'
+default['jr-jenkins']['proxy']['sslciphersuite'] = 'ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH'
